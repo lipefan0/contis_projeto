@@ -50,7 +50,9 @@ export default function DashboardPage() {
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold">Bem-vindo ao Sistema</h1>
+          <h1 className="text-4xl font-bold">
+            Bem-vindo ao Importixs by Contis
+          </h1>
           <p className="text-muted-foreground mt-2">
             Selecione um módulo para começar
           </p>
