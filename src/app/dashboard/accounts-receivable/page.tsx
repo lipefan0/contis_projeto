@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Download, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { ReceivableForm } from "./receivable-form";
+import { ReceivableBulkUpload } from "./receivable-bulk-upload";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -12,11 +14,14 @@ export default function ProductsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch("/api/products/template", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:8080/accounts/receivable/template",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Falha ao baixar template");
 
@@ -74,11 +79,11 @@ export default function ProductsPage() {
         </TabsList>
 
         <TabsContent value="manual">
-          <span>Cadastro manual</span>
+          <ReceivableForm />
         </TabsContent>
 
         <TabsContent value="bulk">
-          <span>Cadastro em massa</span>
+          <ReceivableBulkUpload />
         </TabsContent>
       </Tabs>
     </div>

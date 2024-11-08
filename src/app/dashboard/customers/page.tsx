@@ -14,7 +14,7 @@ export default function ProductsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch("/api/products/template", {
+      const response = await fetch("http://localhost:8080/customers/template", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
         },

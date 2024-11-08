@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Download, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { PayableForm } from "./payable-form";
+import { PayableBulkUpload } from "./payable-bulk-upload";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -77,11 +79,11 @@ export default function ProductsPage() {
         </TabsList>
 
         <TabsContent value="manual">
-          <span>Cadastro manual</span>
+          <PayableForm />
         </TabsContent>
 
         <TabsContent value="bulk">
-          <span>Cadastro em massa</span>
+          <PayableBulkUpload />
         </TabsContent>
       </Tabs>
     </div>

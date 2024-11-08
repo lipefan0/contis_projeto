@@ -51,7 +51,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold">
-            Bem-vindo ao Importixs by Contis
+            Bem-vindo ao Importix by Contis
           </h1>
           <p className="text-muted-foreground mt-2">
             Selecione um módulo para começar

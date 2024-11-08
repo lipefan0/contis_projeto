@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Integração Bling",
+  title: "Importix by Contis",
   description: "Sistema de integração com a API do Bling",
 };
 
