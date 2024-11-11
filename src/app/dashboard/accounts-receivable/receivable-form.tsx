@@ -24,6 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { ENDPOINTS } from "@/config/api";
 
 interface FormaPagamento {
   id: string;
@@ -107,7 +108,7 @@ export function ReceivableForm() {
       try {
         console.log("Iniciando chamada - Formas de Pagamento");
         const pagamentosResponse = await fetch(
-          "http://localhost:8080/reference/formas-pagamento",
+          ENDPOINTS.reference.formasPagamento,
           { headers }
         );
 
@@ -126,10 +127,9 @@ export function ReceivableForm() {
       // Buscar portadores
       try {
         console.log("Iniciando chamada - Portadores");
-        const portadoresResponse = await fetch(
-          "http://localhost:8080/reference/portadores",
-          { headers }
-        );
+        const portadoresResponse = await fetch(ENDPOINTS.reference.portadores, {
+          headers,
+        });
 
         if (portadoresResponse.ok) {
           const portadoresData = await portadoresResponse.json();
@@ -146,10 +146,9 @@ export function ReceivableForm() {
       // Buscar categorias
       try {
         console.log("Iniciando chamada - Categorias");
-        const categoriasResponse = await fetch(
-          "http://localhost:8080/reference/categorias",
-          { headers }
-        );
+        const categoriasResponse = await fetch(ENDPOINTS.reference.categorias, {
+          headers,
+        });
 
         if (categoriasResponse.ok) {
           const categoriasData = await categoriasResponse.json();
@@ -204,17 +203,14 @@ export function ReceivableForm() {
       console.log("Dados a serem enviados:", data);
       setIsLoading(true);
 
-      const response = await fetch(
-        "http://localhost:8080/accounts/receivable",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(ENDPOINTS.accountsReceivable.base, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
+        },
+        body: JSON.stringify(data),
+      });
 
       const responseData = await response.json();
       console.log("Resposta da API:", responseData);

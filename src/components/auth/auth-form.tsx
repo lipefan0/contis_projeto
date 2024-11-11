@@ -17,10 +17,12 @@ import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ENDPOINTS } from "@/config/api";
+import { useAuth } from "@/hooks/use-auth";
 
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = ENDPOINTS.auth.exchangeToken;
 const BLING_AUTH_URL = "https://www.bling.com.br/Api/v3/oauth/authorize";
-const REDIRECT_URI = "http://localhost:8080/auth/callback";
+const REDIRECT_URI = ENDPOINTS.auth.callback;
 
 const authSchema = z.object({
   clientId: z.string().min(1, "Client ID é obrigatório"),
@@ -35,6 +37,7 @@ export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const exchangeAttempted = useRef(false);
   const searchParams = useSearchParams();
+  const { setToken } = useAuth();
 
   useEffect(() => {
     const code = searchParams.get("code");
@@ -80,7 +83,7 @@ export function AuthForm() {
 
       console.log("Enviando requisição para troca de token...");
 
-      const response = await fetch(`${BACKEND_URL}/auth/exchange-token`, {
+      const response = await fetch(BACKEND_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,8 +101,8 @@ export function AuthForm() {
         throw new Error("Token não recebido");
       }
 
-      // Salvar dados do token
-      localStorage.setItem("bling_token", tokenData.access_token);
+      setToken(tokenData.access_token);
+
       localStorage.setItem("bling_refresh_token", tokenData.refresh_token);
       localStorage.setItem(
         "bling_token_expires",

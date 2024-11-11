@@ -10,12 +10,14 @@ import {
 import { Users, Receipt, CreditCard, ShoppingBag, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { clearToken } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("bling_token");
+    clearToken();
     router.replace("/");
   };
 

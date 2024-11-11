@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ReceivableForm } from "./receivable-form";
 import { ReceivableBulkUpload } from "./receivable-bulk-upload";
+import { ENDPOINTS } from "@/config/api";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -14,14 +15,11 @@ export default function ProductsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/accounts/receivable/template",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
-          },
-        }
-      );
+      const response = await fetch(ENDPOINTS.accountsReceivable.template, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
+        },
+      });
 
       if (!response.ok) throw new Error("Falha ao baixar template");
 
@@ -29,7 +27,7 @@ export default function ProductsPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "template_produtos.xlsx";
+      a.download = "template_contas_a_receber.xlsx";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

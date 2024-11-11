@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ENDPOINTS } from "@/config/api";
 
 export function ReceivableBulkUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -46,16 +47,13 @@ export function ReceivableBulkUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(
-        "http://localhost:8080/accounts/receivable/upload",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(ENDPOINTS.accountsReceivable.upload, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
+        },
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error("Falha no upload");

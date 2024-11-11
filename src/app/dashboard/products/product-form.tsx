@@ -23,6 +23,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { ENDPOINTS } from "@/config/api";
 
 const productSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
@@ -57,7 +58,7 @@ export function ProductForm() {
     try {
       setIsLoading(true);
 
-      const response = await fetch("http://localhost:8080/products", {
+      const response = await fetch(ENDPOINTS.products.base, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

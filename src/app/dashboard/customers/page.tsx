@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { CustomerForm } from "./customer-form";
 import { CustomerBulkUpload } from "./customer-bulk-upload";
+import { ENDPOINTS } from "@/config/api";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function ProductsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch("http://localhost:8080/customers/template", {
+      const response = await fetch(ENDPOINTS.customers.template, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
         },
@@ -26,7 +27,7 @@ export default function ProductsPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "template_produtos.xlsx";
+      a.download = "template_clientes.xlsx";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

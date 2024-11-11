@@ -30,6 +30,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { ENDPOINTS } from "@/config/api";
 
 const formatDocument = (value: string) => {
   const numbers = value.replace(/\D/g, "");
@@ -200,7 +201,7 @@ export function CustomerForm() {
       const token = localStorage.getItem("bling_token");
       console.log("Token existe?", !!token);
 
-      const response = await fetch("http://localhost:8080/customers", {
+      const response = await fetch(ENDPOINTS.customers.base, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

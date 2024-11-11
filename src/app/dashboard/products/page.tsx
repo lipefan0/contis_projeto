@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ProductForm } from "./product-form";
 import { ProductBulkUpload } from "./product-bulk-upload";
+import { ENDPOINTS } from "@/config/api";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function ProductsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch("http://localhost:8080/products/template", {
+      const response = await fetch(ENDPOINTS.products.template, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("bling_token")}`,
         },

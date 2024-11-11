@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ENDPOINTS } from "@/config/api";
 
 export function CustomerBulkUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -46,7 +47,7 @@ export function CustomerBulkUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("http://localhost:8080/customers/upload", {
+      const response = await fetch(ENDPOINTS.customers.upload, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("bling_token")}`,

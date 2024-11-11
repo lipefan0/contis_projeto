@@ -4,6 +4,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardLayout({
   children,
@@ -11,39 +13,48 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { token, isAuthenticated, verifyToken, clearToken } = useAuth();
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
-        const token = localStorage.getItem("bling_token");
         if (!token) {
+          clearToken();
           router.replace("/");
           return;
         }
-        setIsAuthenticated(true);
+
+        const isValid = await verifyToken();
+        if (!isValid) {
+          clearToken();
+          router.replace("/");
+          toast({
+            title: "Sessão expirada",
+            description: "Por favor, faça login novamente.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setIsLoading(false);
       } catch (error) {
         console.error("Erro ao verificar autenticação:", error);
+        clearToken();
         router.replace("/");
-      } finally {
-        setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, [router]);
+  }, [token, router, clearToken, verifyToken, toast]);
 
-  if (isLoading) {
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   return <div className="min-h-screen">{children}</div>;
