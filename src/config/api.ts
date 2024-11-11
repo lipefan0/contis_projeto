@@ -31,9 +31,9 @@ export const ENDPOINTS = {
   },
 
   accountsPayable: {
-    base: `${API_URL}/accounts/payable`,
-    template: `${API_URL}/accounts/payable/template`,
-    upload: `${API_URL}/accounts/payable/upload`,
+    base: `${API_URL}/accounts/payble`,
+    template: `${API_URL}/accounts/payble/template`,
+    upload: `${API_URL}/accounts/payble/upload`,
   },
 
   // References

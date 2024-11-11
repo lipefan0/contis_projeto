@@ -1,4 +1,3 @@
-// src/hooks/use-auth.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -19,30 +18,41 @@ export const useAuth = create<AuthState>()(
       isAuthenticated: false,
 
       setToken: (token: string) => {
+        const expiration = Date.now() + 60 * 60 * 1000; // 1 hora
         set({ token, isAuthenticated: true });
+        localStorage.setItem("bling_token", token);
+        localStorage.setItem("bling_token_expiration", expiration.toString());
       },
 
       clearToken: () => {
+        console.log("Clearing token...");
+        localStorage.removeItem("bling_token");
         set({ token: null, isAuthenticated: false });
       },
 
       verifyToken: async () => {
-        const { token } = get();
-        if (!token) return false;
-
         try {
+          const token = get().token || localStorage.getItem("bling_token");
+          console.log("Verifying token:", token);
+
+          if (!token) {
+            console.log("No token found during verification");
+            return false;
+          }
+
           const response = await fetch(`${BACKEND_URL}/auth/verify-token`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
 
-          const isValid = response.status === 200;
-          if (!isValid) {
+          if (response.status === 401) {
+            console.log("Token is invalid (401), clearing token...");
             get().clearToken();
+            return false;
           }
 
-          return isValid;
+          return response.status === 200;
         } catch (error) {
           console.error("Error verifying token:", error);
           get().clearToken();
@@ -51,7 +61,13 @@ export const useAuth = create<AuthState>()(
       },
     }),
     {
-      name: "auth-storage",
+      name: "auth-storage", // Nome para o storage do Zustand
+      skipHydration: true, // Importante para Next.js
     }
   )
 );
+
+// Adicione um useEffect para garantir que localStorage só seja acessado no lado do cliente
+if (typeof window !== "undefined") {
+  const tokenFromStorage = localStorage.getItem("bling_token");
+}

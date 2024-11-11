@@ -18,38 +18,47 @@ export default function DashboardLayout({
   const { token, isAuthenticated, verifyToken, clearToken } = useAuth();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        if (!token) {
-          clearToken();
-          router.replace("/");
-          return;
-        }
+    const initializeAuth = async () => {
+      if (!token) {
+        console.log("Token not found, redirecting...");
+        setIsLoading(false);
+        router.replace("/"); // Evita múltiplos redirecionamentos
+        return;
+      }
 
+      try {
         const isValid = await verifyToken();
+
         if (!isValid) {
+          console.log("Invalid token, clearing...");
           clearToken();
-          router.replace("/");
+          setIsLoading(false); // Definindo isLoading como false antes do redirecionamento
+          router.replace("/"); // Evitar múltiplos redirecionamentos
           toast({
             title: "Sessão expirada",
             description: "Por favor, faça login novamente.",
             variant: "destructive",
           });
-          return;
+        } else {
+          console.log("Token valid, proceeding...");
+          setIsLoading(false); // Só altera o loading se o token for válido
         }
-
-        setIsLoading(false);
       } catch (error) {
-        console.error("Erro ao verificar autenticação:", error);
+        console.error("Erro na verificação do token:", error);
         clearToken();
-        router.replace("/");
+        setIsLoading(false); // Definindo isLoading como false antes do redirecionamento
+        router.replace("/"); // Evitar múltiplos redirecionamentos
       }
     };
 
-    checkAuth();
-  }, [token, router, clearToken, verifyToken, toast]);
+    if (token) {
+      initializeAuth();
+    } else {
+      setIsLoading(false);
+    }
+  }, [token, verifyToken, clearToken, router, toast]);
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />

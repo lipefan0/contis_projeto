@@ -7,10 +7,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Users, Receipt, CreditCard, ShoppingBag, LogOut } from "lucide-react";
+import {
+  Users,
+  Receipt,
+  CreditCard,
+  ShoppingBag,
+  LogOut,
+  Coins,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { ProductsTable } from "@/components/chart/chart-products";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -46,6 +54,12 @@ export default function DashboardPage() {
       icon: Receipt,
       route: "/dashboard/accounts-receivable",
     },
+    {
+      title: "Reembolso",
+      description: "Solicitação de reembolso",
+      icon: Coins,
+      route: "/dashboard/refund",
+    },
   ];
 
   return (
@@ -68,26 +82,36 @@ export default function DashboardPage() {
           Sair
         </Button>
       </div>
+      <Card className="p-6">
+        <h2 className="mt-6 text-3xl font-bold">Cadastro</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-4">
+          {modules.map((module) => (
+            <Card
+              key={module.title}
+              className="hover:bg-accent cursor-pointer transition-colors"
+              onClick={() => router.push(module.route)}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl font-medium">
+                  {module.title}
+                </CardTitle>
+                <module.icon className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{module.description}</CardDescription>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {modules.map((module) => (
-          <Card
-            key={module.title}
-            className="hover:bg-accent cursor-pointer transition-colors"
-            onClick={() => router.push(module.route)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xl font-medium">
-                {module.title}
-              </CardTitle>
-              <module.icon className="h-6 w-6 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription>{module.description}</CardDescription>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card className="p-6 mt-6">
+        <h2 className="mt-6 text-3xl font-bold">Dashboard</h2>
+        <div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2">
+          <ProductsTable />
+          <ProductsTable />
+        </div>
+      </Card>
     </div>
   );
 }

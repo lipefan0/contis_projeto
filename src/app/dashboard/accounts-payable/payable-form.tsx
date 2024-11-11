@@ -49,31 +49,13 @@ const productSchema = z.object({
     .string()
     .transform((val) => parseFloat(val.replace(",", ".")))
     .pipe(z.number().min(0.01, "Valor é obrigatório")),
-  contato: z.object({
-    id: z.number(),
-  }),
-  formaPagamento: z
-    .object({
-      id: z.number(),
-    })
-    .optional(),
-  portador: z
-    .object({
-      id: z.number(),
-    })
-    .optional(),
-  categoria: z
-    .object({
-      id: z.number(),
-    })
-    .optional(),
+  contato: z.object({ id: z.number() }),
+  formaPagamento: z.object({ id: z.number() }).optional(),
+  portador: z.object({ id: z.number() }).optional(),
+  categoria: z.object({ id: z.number() }).optional(),
   historico: z.string().optional(),
   numeroDocumento: z.string().optional(),
-  ocorrencia: z
-    .object({
-      tipo: z.number(),
-    })
-    .default({ tipo: 1 }),
+  ocorrencia: z.object({ tipo: z.number() }).default({ tipo: 1 }),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -86,91 +68,63 @@ export function PayableForm() {
   const [portadores, setPortadores] = useState<Portador[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-  // Função para buscar dados das APIs
   const fetchApiData = async () => {
+    const token = localStorage.getItem("bling_token");
+    if (!token) return;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    };
+
     try {
-      const token = localStorage.getItem("bling_token");
-      if (!token) {
-        console.log("Token não encontrado");
-        return;
-      }
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      };
-
-      // Função para aguardar um tempo específico
       const delay = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
 
-      // Buscar formas de pagamento
-      try {
-        console.log("Iniciando chamada - Formas de Pagamento");
-        const pagamentosResponse = await fetch(
-          ENDPOINTS.reference.formasPagamento,
-          { headers }
-        );
-
-        if (pagamentosResponse.ok) {
-          const pagamentosData = await pagamentosResponse.json();
-          console.log("Formas de Pagamento carregadas");
-          setFormasPagamento(pagamentosData.data || []);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar formas de pagamento:", error);
+      // Fetch formas de pagamento
+      const pagamentosResponse = await fetch(
+        ENDPOINTS.reference.formasPagamento,
+        { headers }
+      );
+      if (pagamentosResponse.ok) {
+        const pagamentosData = await pagamentosResponse.json();
+        setFormasPagamento(pagamentosData.data || []);
       }
 
-      // Aguarda 500ms antes da próxima chamada
       await delay(500);
 
-      // Buscar portadores
-      try {
-        console.log("Iniciando chamada - Portadores");
-        const portadoresResponse = await fetch(ENDPOINTS.reference.portadores, {
-          headers,
-        });
-
-        if (portadoresResponse.ok) {
-          const portadoresData = await portadoresResponse.json();
-          console.log("Portadores carregados");
-          setPortadores(portadoresData.data || []);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar portadores:", error);
+      // Fetch portadores
+      const portadoresResponse = await fetch(ENDPOINTS.reference.portadores, {
+        headers,
+      });
+      if (portadoresResponse.ok) {
+        const portadoresData = await portadoresResponse.json();
+        setPortadores(portadoresData.data || []);
       }
 
-      // Aguarda mais 500ms antes da última chamada
       await delay(500);
 
-      // Buscar categorias
-      try {
-        console.log("Iniciando chamada - Categorias");
-        const categoriasResponse = await fetch(ENDPOINTS.reference.categorias, {
-          headers,
-        });
-
-        if (categoriasResponse.ok) {
-          const categoriasData = await categoriasResponse.json();
-          console.log("Categorias carregadas");
-          setCategorias(categoriasData.data || []);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
+      // Fetch categorias
+      const categoriasResponse = await fetch(ENDPOINTS.reference.categorias, {
+        headers,
+      });
+      if (categoriasResponse.ok) {
+        const categoriasData = await categoriasResponse.json();
+        setCategorias(categoriasData.data || []);
       }
     } catch (error) {
-      console.error("Erro geral:", error);
+      console.error("Erro ao carregar dados do formulário:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar alguns dados do formulário.",
+        description: "Não foi possível carregar os dados do formulário.",
         variant: "destructive",
       });
     }
   };
+
   useEffect(() => {
-    console.log("Componente montado - Iniciando fetchApiData");
     fetchApiData();
-  }, []); // Executado quando o componente monta
+  }, []); // O useEffect deve ser executado uma vez quando o componente é montado
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -180,29 +134,17 @@ export function PayableForm() {
       dataEmissao: "",
       valor: 0,
       historico: "",
-      contato: {
-        id: 0,
-      },
-      formaPagamento: {
-        id: 0,
-      },
-      portador: {
-        id: 0,
-      },
-      categoria: {
-        id: 0,
-      },
-      ocorrencia: {
-        tipo: 1,
-      },
+      contato: { id: 0 },
+      formaPagamento: { id: 0 },
+      portador: { id: 0 },
+      categoria: { id: 0 },
+      ocorrencia: { tipo: 1 },
     },
   });
 
   const onSubmit = async (data: ProductFormData) => {
     try {
-      console.log("Dados a serem enviados:", data);
       setIsLoading(true);
-
       const response = await fetch(ENDPOINTS.accountsPayable.base, {
         method: "POST",
         headers: {
@@ -213,8 +155,6 @@ export function PayableForm() {
       });
 
       const responseData = await response.json();
-      console.log("Resposta da API:", responseData);
-
       if (!response.ok) {
         throw new Error(responseData.message || "Falha ao cadastrar conta");
       }
@@ -223,16 +163,12 @@ export function PayableForm() {
         title: "Sucesso!",
         description: "Conta cadastrada com sucesso.",
       });
-
       form.reset();
     } catch (error) {
-      console.error("Erro completo:", error);
       toast({
         title: "Erro",
         description:
-          error instanceof Error
-            ? error.message
-            : "Não foi possível cadastrar a conta.",
+          error instanceof Error ? error.message : "Erro ao cadastrar conta.",
         variant: "destructive",
       });
     } finally {
@@ -265,7 +201,7 @@ export function PayableForm() {
             />
           </CardContent>
 
-          <CardContent className="grid grid-cols-3 gap-6">
+          <CardContent className="grid md:grid-cols-3 gap-6">
             <FormField
               control={form.control}
               name="vencimento"
@@ -311,7 +247,7 @@ export function PayableForm() {
         </Card>
 
         <Card>
-          <CardContent className="grid grid-cols-2 gap-6 mt-6">
+          <CardContent className="grid md:grid-cols-2 gap-6 mt-6">
             <FormField
               control={form.control}
               name="valor"
@@ -401,7 +337,7 @@ export function PayableForm() {
             />
           </CardContent>
 
-          <CardContent className="grid grid-cols-2 gap-6">
+          <CardContent className="grid md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="portador"
