@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Configuração de headers CORS
   async headers() {
     return [
       {
-        // Aplicar a todas as rotas
         source: '/:path*',
         headers: [
           {
@@ -12,7 +12,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*', // Em produção, especifique os domínios permitidos
+            value: process.env.NEXT_PUBLIC_API_URL || '*',
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -20,12 +20,45 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+            value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization',
           },
         ],
       },
     ];
   },
+
+  // Configuração de rewrites para proxy em desenvolvimento
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
+
+  // Outras configurações
+  reactStrictMode: true,
+  swcMinify: true,
+
+  // Se você estiver tendo problemas com CORS especificamente na Vercel
+  async redirects() {
+    return [
+      {
+        source: '/api/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'x-skip-proxy',
+            value: '1',
+          },
+        ],
+        permanent: false,
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+// Use module.exports ao invés de export default
+module.exports = nextConfig;
