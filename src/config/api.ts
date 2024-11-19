@@ -1,11 +1,8 @@
 // src/config/api.ts
 import axios, { AxiosError, AxiosInstance } from "axios";
-import { useToast } from "@/hooks/use-toast";
 
 // URLs base
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
-export const CALLBACK_URL =
-  "https://oauth-token-generator-server.onrender.com/auth/callback";
 
 // Criação da instância do Axios
 const api: AxiosInstance = axios.create({
@@ -106,7 +103,7 @@ interface Endpoints {
 // Endpoints da API - Usando CALLBACK_URL fixo para auth.callback
 export const ENDPOINTS: Endpoints = {
   auth: {
-    callback: CALLBACK_URL, // URL fixa do Render
+    callback: `${API_URL}/auth/callback`, // URL fixa do Render
     exchangeToken: `${API_URL}/auth/exchange-token`,
     verifyToken: `${API_URL}/auth/verify-token`,
   },
