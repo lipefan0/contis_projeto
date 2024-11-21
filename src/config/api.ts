@@ -103,7 +103,7 @@ interface Endpoints {
 // Endpoints da API - Usando CALLBACK_URL fixo para auth.callback
 export const ENDPOINTS: Endpoints = {
   auth: {
-    callback: `${API_URL}/auth/callback`, // URL fixa do Render
+    callback: `https://app-projeto.api-contis.tech/auth/callback`, // URL fixa do Render
     exchangeToken: `${API_URL}/auth/exchange-token`,
     verifyToken: `${API_URL}/auth/verify-token`,
   },
